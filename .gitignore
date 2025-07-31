@@ -1,0 +1,4 @@
+# Ignorer tous les fichiers IntelliJ peu importe leur emplacement
+.idea/
+*.iml
+node_modules/
