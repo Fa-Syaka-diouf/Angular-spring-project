@@ -2,7 +2,7 @@
 
 Ce projet contient deux parties principales :
 - **Backend** : Développé avec **Spring Boot** (responsabilité de Syaka)
-- **Frontend** : Développé avec **Angular** (responsabilité de [Nom de ton ami])
+- **Frontend** : Développé avec **Angular** (responsabilité de Fatima)
 
 ---
 
