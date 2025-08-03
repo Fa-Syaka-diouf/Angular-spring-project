@@ -1,63 +1,63 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Medicament } from '../models/medicament';
-import { MedicamentService } from '../services/medicament.service';
+import { Pharmacie } from '../models/pharmacie';
+import { PharmacieService } from '../services/pharmacie.service';
 
 @Component({
-  selector: 'app-details-medicaments',
+  selector: 'app-details-pharmacies',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: '././details-medicaments.component.html',
-  styleUrls: ['./details-medicaments.component.css']
+  templateUrl: '././details-pharmacie.component.html',
+  styleUrls: ['./details-pharmacie.component.css']
 })
-export class MedicamentDetailComponent implements OnInit {
-  medicament: Medicament | undefined;
+export class pharmacieDetailComponent implements OnInit {
+  pharmacie: Pharmacie | undefined;
   loading: boolean = true;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private medicamentService: MedicamentService
+    private pharmacieService: PharmacieService
   ) {}
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       const nom = params['nomUrl'];
-      this.loadMedicament(nom);
+      this.loadpharmacie(nom);
     });
   }
 
-  loadMedicament(nom: string): void {
-    this.medicamentService.getMedicamentByNom(nom).subscribe(
-      medicament => {
-        this.medicament = medicament;
+  loadpharmacie(nom: string): void {
+    this.pharmacieService.getpharmacieByNom(nom).subscribe(
+      pharmacie => {
+        this.pharmacie = pharmacie;
         this.loading = false;
         
-        if (!medicament) {
+        if (!pharmacie) {
           // Rediriger si médicament non trouvé
-          this.router.navigate(['/medicaments']);
+          this.router.navigate(['/pharmacie']);
         }
       }
     );
   }
 
   goBack(): void {
-    this.router.navigate(['/medicaments']);
+    this.router.navigate(['/pharmacie']);
   }
 
   onCommander(): void {
-    if (this.medicament) {
+    if (this.pharmacie) {
       // Logique de commande - vous pouvez naviguer vers une page de commande
-      console.log('Commander:', this.medicament.nom);
-      // this.router.navigate(['/commande', this.medicament.nomUrl]);
+      console.log('Commander:', this.pharmacie.nom);
+      // this.router.navigate(['/commande', this.pharmacie.nomUrl]);
     }
   }
 
   onLocaliser(): void {
-    if (this.medicament) {
+    if (this.pharmacie) {
       // Logique pour localiser la pharmacie
-      console.log('Localiser pharmacie:', this.medicament.pharmacie);
+      console.log('Localiser pharmacie:', this.pharmacie.quartier);
       // Vous pouvez ouvrir Google Maps ou naviguer vers une page de localisation
     }
   }
@@ -85,25 +85,24 @@ export class MedicamentDetailComponent implements OnInit {
   /**
    * Modifier le médicament
    */
-  modifierMedicament(): void {
-    if (this.medicament) {
+  modifierpharmacie(): void {
+    if (this.pharmacie) {
       // Navigation vers la page d'édition
-      this.router.navigate(['/medicament/edit', this.medicament.nomUrl]);
+      this.router.navigate(['/pharmacie/edit', this.pharmacie.nomUrl]);
 
     }
   }
-  
 
   /**
    * Supprimer le médicament
    */
-  supprimerMedicament(): void {
-    if (this.medicament) {
+  supprimerpharmacie(): void {
+    if (this.pharmacie) {
       // Confirmation avant suppression
-      const confirmation = confirm(`Êtes-vous sûr de vouloir supprimer ${this.medicament.nom} ?`);
+      const confirmation = confirm(`Êtes-vous sûr de vouloir supprimer ${this.pharmacie.nom} ?`);
       
       if (confirmation) {
-        console.log('Suppression du médicament:', this.medicament.nom);
+        console.log('Suppression du médicament:', this.pharmacie.nom);
         
         setTimeout(() => {
           alert('Médicament supprimé avec succès !');
@@ -112,6 +111,7 @@ export class MedicamentDetailComponent implements OnInit {
       }
 }
   }
+
 
   navigateToHome(): void{
     this.router.navigate(['/accueil'])

@@ -81,4 +81,12 @@ export class MedicamentService {
     );
     return of(filtered);
   }
+
+  addMedicament(medicament: Medicament): Observable<Medicament> {
+  this.medicaments.push(medicament);
+  return of(medicament);
+}
+
+
+
 }

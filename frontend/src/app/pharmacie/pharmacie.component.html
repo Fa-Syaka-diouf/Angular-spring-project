@@ -1,1 +1,246 @@
-<p>pharmacie works!</p>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmacap - Section Pharmacies</title>
+</head>
+<body>
+    <!-- Background elements -->
+    <div class="background-elements">
+        <img src=".\assets\Medical concept_ flat lay, copy, a Health & Medical Photo by Fascinadora.jpeg" alt="logo">
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <img src=".\assets\download__46_-removebg-preview.png" alt="icone">Pharmap</div>
+        <nav class="nav-links">
+            <a href="#accueil" (click)="navigateToHome()">Page accueil</a>
+            <a href="#horaire" (click)="navigateToPharmacySearch()">Voir horaire</a>
+            <a href="#pharmacie" (click)="navigateToPharmacySearch()">Voir Pharmacie</a>
+            <button class="disconnect-btn" (click)="navigateToHome()">déconnexion</button>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-container">
+            <h1>Trouvez toutes les meilleures pharmacies ici !</h1>
+            
+            <ul class="features">
+                <li>Cherchez et trouvez tout type de pharmacie</li>
+                <li>Allez acheter vos médicaments à n'importe quelle heure, plus d'urgences !</li>
+                <li>Accédez aux horaire de toutes les pharmacies disponibles dans notre site !</li>
+            </ul>
+
+            <div class="search-section">
+                <div class="search-bar">
+                    <input type="text" class="search-input" placeholder="Rechercher pharmacie">
+                    <button class="search-btn">Trouver</button>
+                </div>
+                
+                <div class="quick-filters">
+                    <button class="filter-btn active">yoff</button>
+                    <button class="filter-btn">almadies</button>
+                    <button class="filter-btn">medina</button>
+                    <button class="filter-btn">point E</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Section pour ajouter une pharmacie -->
+    <section class="add-pharmacy-section">
+        <button class="add-pharmacy-btn" (click)="openAddPharmacyModal()">
+            + Ajouter une pharmacie
+        </button>
+    </section>
+
+    <!-- Modal avec *ngIf pour contrôler l'affichage -->
+    <div class="modal-overlay" 
+         *ngIf="isModalOpen" 
+         (click)="onModalOverlayClick($event)"
+         style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; justify-content: center; align-items: center;">
+        
+        <div class="modal-content" style="background: white; padding: 20px; border-radius: 8px; max-width: 500px; width: 90%;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 class="modal-title">Ajouter une nouvelle pharmacie</h2>
+                <button class="close-btn" (click)="closeAddPharmacyModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+            </div>
+            
+            <!-- Formulaire réactif fonctionnel -->
+            <form [formGroup]="pharmacieForm" (ngSubmit)="onSubmitPharmacie()">
+                <!-- Nom de la pharmacie -->
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label class="form-label" for="pharmacieNom" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                        Nom de la pharmacie *
+                    </label>
+                    <input 
+                        type="text" 
+                        class="form-input" 
+                        id="pharmacieNom" 
+                        formControlName="nom"
+                        placeholder="Ex: Pharmacie Centrale"
+                        style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <div *ngIf="isFieldInvalid('nom')" style="color: red; font-size: 12px; margin-top: 5px;">
+                        {{ getFieldError('nom') }}
+                    </div>
+                </div>
+                
+                <!-- Adresse -->
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label class="form-label" for="pharmacieAdresse" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                        Adresse *
+                    </label>
+                    <input 
+                        type="text" 
+                        class="form-input" 
+                        id="pharmacieAdresse" 
+                        formControlName="adresse"
+                        placeholder="Ex: 123 Avenue des Champs-Élysées"
+                        style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <div *ngIf="isFieldInvalid('adresse')" style="color: red; font-size: 12px; margin-top: 5px;">
+                        {{ getFieldError('adresse') }}
+                    </div>
+                </div>
+                
+                <!-- Quartier/Zone -->
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label class="form-label" for="pharmacieQuartier" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                        Quartier/Zone *
+                    </label>
+                    <select 
+                        class="form-input" 
+                        id="pharmacieQuartier" 
+                        formControlName="quartier"
+                        style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="">Sélectionner un quartier</option>
+                        <option value="yoff">Yoff</option>
+                        <option value="almadies">Almadies</option>
+                        <option value="medina">Médina</option>
+                        <option value="point-e">Point E</option>
+                        <option value="plateau">Plateau</option>
+                        <option value="sacre-coeur">Sacré-Cœur</option>
+                        <option value="ouakam">Ouakam</option>
+                    </select>
+                    <div *ngIf="isFieldInvalid('quartier')" style="color: red; font-size: 12px; margin-top: 5px;">
+                        {{ getFieldError('quartier') }}
+                    </div>
+                </div>
+                
+                <!-- Téléphone -->
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label class="form-label" for="pharmacieTelephone" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                        Téléphone *
+                    </label>
+                    <input 
+                        type="tel" 
+                        class="form-input" 
+                        id="pharmacieTelephone" 
+                        formControlName="telephone"
+                        placeholder="Ex: +221 33 123 45 67"
+                        style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <div *ngIf="isFieldInvalid('telephone')" style="color: red; font-size: 12px; margin-top: 5px;">
+                        {{ getFieldError('telephone') }}
+                    </div>
+                </div>
+                
+                <!-- Horaires -->
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label class="form-label" for="pharmacieHoraires" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                        Horaires d'ouverture *
+                    </label>
+                    <input 
+                        type="text" 
+                        class="form-input" 
+                        id="pharmacieHoraires" 
+                        formControlName="horaires"
+                        placeholder="Ex: 08h00 - 20h00"
+                        style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <div *ngIf="isFieldInvalid('horaires')" style="color: red; font-size: 12px; margin-top: 5px;">
+                        {{ getFieldError('horaires') }}
+                    </div>
+                </div>
+                
+                <!-- Boutons d'action -->
+                <div class="form-actions" style="text-align: right; margin-top: 20px;">
+                    <button type="button" 
+                            class="btn-cancel" 
+                            (click)="closeAddPharmacyModal()" 
+                            style="margin-right: 10px; padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        Annuler
+                    </button>
+                    <button type="submit" 
+                            class="btn-submit" 
+                            [disabled]="pharmacieForm.invalid"
+                            style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        Ajouter la pharmacie
+                    </button>
+                </div>
+                
+                <!-- Debug du formulaire -->
+                <div style="background: #f8f9fa; padding: 10px; margin-top: 20px; border-radius: 4px; font-size: 12px;">
+                    <strong>Debug Formulaire:</strong><br>
+                    Formulaire valide: {{ pharmacieForm.valid }}<br>
+                    Formulaire invalide: {{ pharmacieForm.invalid }}<br>
+                    Formulaire touché: {{ pharmacieForm.touched }}<br>
+                    Erreurs: {{ pharmacieForm.errors | json }}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Pharmacies Section -->
+    <section class="pharmacies-section">
+        <div class="pharmacies-grid">
+            <!-- Utilisation de *ngFor pour itérer sur les pharmacies -->
+            <div class="pharmacy-card" 
+                 *ngFor="let pharmacie of pharmacies"
+                 (click)="onPharmacieClick(pharmacie)" 
+                 [attr.data-pharmacy]="pharmacie.nomUrl">
+                <div class="pharmacy-image">
+                    <div class="pharmacy-icon">
+                        <img src=".\assets\Architecture_PSD__High_Quality_Free_PSD_Templates_for_Download___Freepik-removebg-preview.png" alt="pharmacie">
+                    </div>
+                </div>
+                <div class="pharmacy-info">
+                    <div class="pharmacy-name">{{ pharmacie.nom }}</div>
+                    <div class="pharmacy-desc">{{ pharmacie.quartier | titlecase }} - {{ pharmacie.horaires }}</div>
+                    <div class="pharmacy-address">{{ pharmacie.adresse }}</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <div class="footer-section">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <h3 class="footer-title">INSCRIVEZ VOTRE PHARMACIE</h3>
+                    <p class="footer-description">
+                        Vous êtes propriétaire d'une pharmacie? 
+                        Inscrivez la dans notre site à travers notre 
+                        <a href="#" class="footer-link" (click)="navigateToFormulaire()">formulaire</a>.
+                    </p>
+                </div>
+
+                <div class="footer-right">
+                    <label class="footer-search-label">Rechercher</label>
+                    <div class="footer-search-container">
+                        <input type="text" class="footer-search-input" placeholder="Médicaments/pharmacies">
+                        <button class="footer-search-btn" (click)="navigateToMedicines()">Rechercher</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="footer-copyright">Designed by Fatima</p>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>

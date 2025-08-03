@@ -51,6 +51,145 @@
     </main>
 
     <!-- Medications Section -->
+
+     <!-- Section pour ajouter un médicament -->
+<section class="add-medication-section">
+    <button class="add-medication-btn" (click)="openAddMedicationModal()">
+        + Ajouter un médicament
+    </button>
+</section>
+
+<!-- Modal avec *ngIf pour contrôler l'affichage -->
+
+<!-- Modal avec debug -->
+<div class="modal-overlay" 
+     *ngIf="isModalOpen" 
+     (click)="onModalOverlayClick($event)"
+     style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; justify-content: center; align-items: center;">
+    
+    <div class="modal-content" style="background: white; padding: 20px; border-radius: 8px; max-width: 500px; width: 90%;">
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 class="modal-title">Ajouter un nouveau médicament</h2>
+            <button class="close-btn" (click)="closeAddMedicationModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+        </div>
+        
+        <!-- Formulaire réactif fonctionnel -->
+        <form [formGroup]="medicamentForm" (ngSubmit)="onSubmitMedicament()">
+            <!-- Nom du médicament -->
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label class="form-label" for="medicamentNom" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                    Nom du médicament *
+                </label>
+                <input 
+                    type="text" 
+                    class="form-input" 
+                    id="medicamentNom" 
+                    formControlName="nom"
+                    placeholder="Ex: Doliprane"
+                    style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <div *ngIf="isFieldInvalid('nom')" style="color: red; font-size: 12px; margin-top: 5px;">
+                    {{ getFieldError('nom') }}
+                </div>
+            </div>
+            
+            <!-- Pharmacie -->
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label class="form-label" for="medicamentPharmacie" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                    Pharmacie *
+                </label>
+                <input 
+                    type="text" 
+                    class="form-input" 
+                    id="medicamentPharmacie" 
+                    formControlName="pharmacie"
+                    placeholder="Ex: Pharmacie Centrale"
+                    style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <div *ngIf="isFieldInvalid('pharmacie')" style="color: red; font-size: 12px; margin-top: 5px;">
+                    {{ getFieldError('pharmacie') }}
+                </div>
+            </div>
+            
+            <!-- Prix -->
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label class="form-label" for="medicamentPrix" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                    Prix (FCFA) *
+                </label>
+                <input 
+                    type="number" 
+                    class="form-input" 
+                    id="medicamentPrix" 
+                    formControlName="prix"
+                    placeholder="Ex: 2500" 
+                    min="0"
+                    style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <div *ngIf="isFieldInvalid('prix')" style="color: red; font-size: 12px; margin-top: 5px;">
+                    {{ getFieldError('prix') }}
+                </div>
+            </div>
+            
+            <!-- Catégorie -->
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label class="form-label" for="medicamentCategorie" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                    Catégorie *
+                </label>
+                <input 
+                    type="text" 
+                    class="form-input" 
+                    id="medicamentCategorie" 
+                    formControlName="categorie"
+                    placeholder="Ex: Antalgique"
+                    style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <div *ngIf="isFieldInvalid('categorie')" style="color: red; font-size: 12px; margin-top: 5px;">
+                    {{ getFieldError('categorie') }}
+                </div>
+            </div>
+            
+            <!-- Dosage -->
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label class="form-label" for="medicamentDose" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                    Dosage *
+                </label>
+                <input 
+                    type="text" 
+                    class="form-input" 
+                    id="medicamentDose" 
+                    formControlName="dose"
+                    placeholder="Ex: 500mg"
+                    style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <div *ngIf="isFieldInvalid('dose')" style="color: red; font-size: 12px; margin-top: 5px;">
+                    {{ getFieldError('dose') }}
+                </div>
+            </div>
+            
+            <!-- Boutons d'action -->
+            <div class="form-actions" style="text-align: right; margin-top: 20px;">
+                <button type="button" 
+                        class="btn-cancel" 
+                        (click)="closeAddMedicationModal()" 
+                        style="margin-right: 10px; padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    Annuler
+                </button>
+                <button type="submit" 
+                        class="btn-submit" 
+                        [disabled]="medicamentForm.invalid"
+                        style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    Ajouter le médicament
+                </button>
+            </div>
+            
+            <!-- Debug du formulaire -->
+            <div style="background: #f8f9fa; padding: 10px; margin-top: 20px; border-radius: 4px; font-size: 12px;">
+                <strong>Debug Formulaire:</strong><br>
+                Formulaire valide: {{ medicamentForm.valid }}<br>
+                Formulaire invalide: {{ medicamentForm.invalid }}<br>
+                Formulaire touché: {{ medicamentForm.touched }}<br>
+                Erreurs: {{ medicamentForm.errors | json }}
+            </div>
+        </form>
+    </div>
+</div>
+
+
    <section class="medications-section">
     <div class="medications-grid">
         <!-- Utilisation de *ngFor pour itérer sur les médicaments -->
@@ -73,7 +212,8 @@
         </div>
     </div>
 </section>
-     <!-- Footer Section -->
+
+ <!-- Footer Section -->
     <div class="footer-section">
         <div class="footer-container">
             <div class="footer-content">
@@ -100,6 +240,9 @@
             </div>
         </div>
     </div>
+
+
+    
 
 
 

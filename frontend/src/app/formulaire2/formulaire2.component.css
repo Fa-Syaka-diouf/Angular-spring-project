@@ -1,4 +1,4 @@
-/* * {
+* {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -166,7 +166,7 @@
             border-radius: 25px;
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
             width: 100%;
-            max-width: 700px;
+            max-width: 1200px !important;
             position: relative;
         }
 
@@ -444,4 +444,4 @@
                 font-size: 1.6rem;
                 margin-bottom: 30px;
             }
-        } */
+        }
