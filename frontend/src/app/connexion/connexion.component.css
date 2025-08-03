@@ -1,0 +1,267 @@
+        *,
+        *::before,
+        *::after  {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            background: linear-gradient(135deg, #4a90a4 0%, #5ba0b5 100%);
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
+
+        .left-section {
+            flex: 1;
+            background: linear-gradient(135deg, #4a90a4 0%, #5ba0b5 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .left-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><circle cx="300" cy="100" r="80" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="300" r="60" fill="rgba(255,255,255,0.08)"/><circle cx="350" cy="350" r="40" fill="rgba(255,255,255,0.06)"/></svg>');
+            background-size: cover;
+            overflow: hidden;
+        }
+
+        .medical-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.3;
+            z-index: 1;
+        }
+
+        .medical-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .content {
+            z-index: 2;
+            position: relative;
+        }
+
+        .tagline {
+            font-size: 3.5rem;
+            font-weight: 300;
+            color: white;
+            margin-bottom: 30px;
+            font-style: italic;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.8rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 300;
+            line-height: 1.4;
+        }
+
+        .right-section {
+            flex: 1;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .login-container {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-icon img {
+            width: 161px;
+            height: 129px;
+            background: #4a90a4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .logo-text {
+            font-size: 2rem;
+            position: relative;
+            right: 50px;
+            font-weight: bold !important; 
+            color: #4a90a4;
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        .welcome-text {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .subtitle-text {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 18px;
+            border: none;
+            background: #f5f5f5;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            background: #eef7f9;
+            box-shadow: 0 0 0 2px rgba(74, 144, 164, 0.2);
+        }
+
+        .form-input::placeholder {
+            color: #888;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .remember-me input {
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+        }
+
+        .forgot-password {
+            color: #4a90a4;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            color: #3a7a8a;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: #4a90a4;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .login-btn:hover {
+            background: #3a7a8a;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(74, 144, 164, 0.3);
+        }
+
+        .password-forgotten {
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .password-forgotten a {
+            color: #4a90a4;
+            text-decoration: none;
+        }
+
+        .password-forgotten a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 968px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .left-section {
+                min-height: 40vh;
+                padding: 40px 30px;
+            }
+            
+            .tagline {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.4rem;
+            }
+            
+            .right-section {
+                padding: 20px;
+            }
+            
+            .login-container {
+                padding: 30px;
+            }
+        }

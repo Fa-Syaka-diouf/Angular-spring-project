@@ -1,0 +1,628 @@
+ * {
+            margin: 0;
+            padding: 0 ;
+            box-sizing: border-box;
+        }
+
+        a{
+            color: inherit;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Background elements */
+        .background-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 0;
+            background: linear-gradient(135deg, #4a90a4 0%, #5ba0b5 100%);
+        }
+
+        .background-elements img {
+            object-fit: cover;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* Overlay sur l'image de background */
+        .background-elements::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(74, 144, 164, 0.7) 0%, rgba(91, 160, 181, 0.8) 50%, rgba(107, 166, 184, 0.6) 100%);
+            z-index: 1;
+        }
+
+        .pill {
+            position: absolute;
+            width: 20px;
+            height: 35px;
+            border-radius: 10px;
+            opacity: 0.7;
+        }
+
+        .pill-1 {
+            top: 15%;
+            right: 25%;
+            background: linear-gradient(135deg, #ffffff 0%, #e8f4f8 100%);
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .pill-2 {
+            top: 25%;
+            right: 15%;
+            background: linear-gradient(135deg, #ffffff 0%, #e8f4f8 100%);
+            width: 25px;
+            height: 40px;
+            animation: float 4s ease-in-out infinite 1.5s;
+        }
+
+        .pill-3 {
+            top: 45%;
+            right: 10%;
+            background: linear-gradient(135deg, #ffffff 0%, #e8f4f8 100%);
+            width: 18px;
+            height: 30px;
+            animation: float 4s ease-in-out infinite 3s;
+        }
+
+        .pill-4 {
+            bottom: 30%;
+            right: 30%;
+            background: linear-gradient(135deg, #ffffff 0%, #e8f4f8 100%);
+            width: 22px;
+            height: 38px;
+            animation: float 4s ease-in-out infinite 2s;
+        }
+
+        .pill-5 {
+            bottom: 15%;
+            right: 20%;
+            background: linear-gradient(135deg, #ffffff 0%, #e8f4f8 100%);
+            animation: float 4s ease-in-out infinite 0.5s;
+        }
+
+        @keyframes float {
+            0%, 100% { 
+                transform: translateY(0px) rotate(0deg); 
+                opacity: 0.7;
+            }
+            50% { 
+                transform: translateY(-15px) rotate(5deg); 
+                opacity: 0.9;
+            }
+        }
+
+        /* Header */
+        .header {
+            position: relative;
+            z-index: 15;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #277B96;
+        }
+
+        .logo img {
+            margin-right: 8px;
+            width: 100px;
+            height: 80px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 35px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #ffffff;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .disconnect-btn {
+            background: #277B96;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        /* Main content */
+        .main-content {
+            position: relative;
+            z-index: 10;
+            padding: 80px 40px;
+            max-width: 1200px;
+        }
+
+        .content-container {
+            max-width: 600px;
+        }
+
+        h1 {
+            font-size: 52px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 40px;
+            line-height: 1.1;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .features {
+            list-style: none;
+            margin-bottom: 50px;
+        }
+
+        .features li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            color: #ffffff;
+            font-size: 16px;
+            line-height: 1.4;
+        }
+
+        .features li::before {
+            content: "•";
+            color: #1976D2;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 20px;
+            margin-top: -2px;
+            min-width: 20px;
+        }
+
+        /* Search section */
+        .search-section {
+            margin-bottom: 30px;
+        }
+
+        .search-bar {
+            display: flex;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            overflow: hidden;
+            max-width: 550px;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 18px 25px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            background: transparent;
+        }
+
+        .search-input::placeholder {
+            color: #999;
+        }
+
+        .search-btn {
+            background: #4FC3F7;
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background: #29B6F6;
+        }
+
+        .quick-filters {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            color: #ffffff;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: rgba(255, 255, 255, 0.9);
+            color: #2196F3;
+            border-color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-links {
+                gap: 20px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .main-content {
+                padding: 40px 20px;
+            }
+
+            h1 {
+                font-size: 36px;
+            }
+
+            .stethoscope {
+                right: -50px;
+                width: 250px;
+                height: 300px;
+                opacity: 0.3;
+            }
+
+            .quick-filters {
+                justify-content: center;
+            }
+        }
+
+
+
+         /* Medications grid */
+        .medications-section {
+           
+            max-width: 1600px;
+            margin-top: 250px !important;
+            padding: 60px 60px;
+        }
+
+        .medications-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .medication-card {
+            background: linear-gradient(135deg, #4FC3F7 0%, #29B6F6 100%);
+            border-radius: 20px;
+            padding: 0;
+            box-shadow: 0 8px 25px rgba(79, 195, 247, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .medication-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(79, 195, 247, 0.4);
+        }
+
+        .medication-image {
+            background: #ffffff;
+            margin: 15px 15px 0 15px;
+            border-radius: 15px;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .pill-bottle {
+            width: 80px;
+            height: 100px;
+            position: relative;
+        }
+
+        /* Bouteille de médicament stylisée */
+        .pill-bottle::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 70px;
+            background: linear-gradient(135deg, #8D6E63 0%, #5D4037 100%);
+            border-radius: 8px 8px 15px 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Bouchon de la bouteille */
+        .pill-bottle::after {
+            content: '';
+            position: absolute;
+            bottom: 65px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 35px;
+            height: 20px;
+            background: linear-gradient(135deg, #FFFFFF 0%, #F5F5F5 100%);
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        /* Pilules sur la bouteille */
+        .pills {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4FC3F7;
+        }
+
+        .pill-1 {
+            top: 25px;
+            left: 25px;
+            background: #FF5722;
+        }
+
+        .pill-2 {
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+        }
+
+        .pill-3 {
+            top: 40px;
+            left: 35px;
+            background: #FF9800;
+        }
+
+        .pill-4 {
+            top: 45px;
+            right: 25px;
+            background: #9C27B0;
+            width: 10px;
+            height: 10px;
+        }
+
+        .medication-info {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .medication-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .medication-desc {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+            line-height: 1.4;
+            font-weight: 500;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .medications-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 25px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .medications-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .medication-card {
+                max-width: 400px;
+                margin: 0 auto;
+            }
+
+            body {
+                padding: 40px 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .medication-name {
+                font-size: 16px;
+            }
+
+            .medication-desc {
+                font-size: 12px;
+            }
+
+            .medication-image {
+                height: 120px;
+            }
+        }
+
+
+
+          .footer-section {
+            background: linear-gradient(135deg, #0097a7 0%, #00838f 100%);
+            color: white;
+            padding: 60px 20px 30px;
+            margin-top: 100px;
+        }
+
+        .footer-container {
+            margin: 0 auto;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .footer-left {
+            max-width: 500px;
+        }
+
+        .footer-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .footer-description {
+            font-size: 16px;
+            line-height: 1.6;
+            opacity: 0.9;
+            margin-bottom: 25px;
+        }
+
+        .footer-link {
+            color: white;
+            text-decoration: underline;
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-link:hover {
+            opacity: 1;
+        }
+
+        .footer-right {
+            text-align: center;
+        }
+
+        .footer-search-label {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .footer-search-container {
+            display: flex;
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .footer-search-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            font-size: 16px;
+            outline: none;
+            color: #333;
+        }
+
+        .footer-search-input::placeholder {
+            color: #999;
+        }
+
+        .footer-search-btn {
+            background: #00bcd4;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .footer-search-btn:hover {
+            background: #0097a7;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .footer-copyright {
+            font-size: 14px;
+            opacity: 0.8;
+            margin: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .pharmacies-title {
+                font-size: 32px;
+            }
+
+            .pharmacies-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .pharmacy-card {
+                padding: 30px 20px;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                text-align: center;
+            }
+
+            .footer-left {
+                max-width: none;
+            }
+
+            .footer-title {
+                font-size: 24px;
+            }
+
+            .footer-search-container {
+                flex-direction: column;
+                border-radius: 15px;
+            }
+
+            .footer-search-btn {
+                border-radius: 0 0 15px 15px;
+            }
+        }
+
+   
+
+
+        
+   
