@@ -1,31 +1,39 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet, RouterLinkActive, RouterLink } from '@angular/router';
-import { bootstrapApplication } from '@angular/platform-browser';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 @Component({
-  selector: 'app-root',
-  imports: [RouterOutlet, CommonModule, FormsModule],
+  selector: 'app-accueil',
   standalone: true,
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+  imports: [CommonModule, FormsModule],
+  templateUrl: './accueil.component.html',
+  styleUrls: ['./accueil.component.css']
 })
-export class App {
-  protected readonly title = signal('frontend');
+export class AccueilComponent {
   
+  popularMedicines = [
+    { name: 'Doliprane', active: false },
+    { name: 'Vitamine c', active: false },
+    { name: 'Ibuprofène', active: false },
+    { name: 'Antadys', active: false }
+  ];
 
   searchQuery = '';
 
   constructor(private router: Router) { }
 
-   onSearchMedicine(): void {
+  onSearchMedicine(): void {
     if (this.searchQuery.trim()) {
       this.router.navigate(['/search'], { queryParams: { q: this.searchQuery } });
     }
   }
 
- 
+  onMedicineClick(medicine: any): void {
+    this.popularMedicines.forEach(med => med.active = false);
+    medicine.active = true;
+    this.router.navigate(['/search'], { queryParams: { q: medicine.name } });
+  }
 
   navigateToHome(): void{
     this.router.navigate(['/accueil'])
@@ -52,7 +60,3 @@ navigateToFormulaire() {
   this.router.navigate(['/formulaire1']);
 }
 }
-
-
-
-
