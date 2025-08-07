@@ -11,5 +11,4 @@ public class StockMedocDTO {
     private Integer quantite;
     private BigDecimal prix;
     private String nomPharmacie;
-    private String categorieMedicament;
 }

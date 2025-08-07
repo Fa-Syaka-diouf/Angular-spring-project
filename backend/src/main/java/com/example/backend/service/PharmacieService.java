@@ -19,6 +19,8 @@ public class PharmacieService {
     private PharmacieRepository pharmacieRepository;
 
     @Autowired
+    private GerantService gerantService;
+    @Autowired
     private EntityDTOMapper mapper;
 
     public List<PharmacieDTO> getAllPharmacies() {

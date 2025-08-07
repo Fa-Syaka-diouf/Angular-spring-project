@@ -1,5 +1,6 @@
 package com.example.backend.entity;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,10 +22,9 @@ public class Pharmacie {
     @Column(name = "nom_pharmacie", length = 150, nullable = false)
     private String nomPharmacie;
 
-    @Column(name = "latitude", precision = 9, scale = 6, nullable = false)
+    @Column(name = "latitude", precision = 9, scale = 6, nullable = true)
     private BigDecimal latitude;
-
-    @Column(name = "longitude", precision = 9, scale = 6, nullable = false)
+    @Column(name = "longitude", precision = 9, scale = 6, nullable = true)
     private BigDecimal longitude;
 
     @Column(name = "contact_telephonique", length = 20, nullable = false)

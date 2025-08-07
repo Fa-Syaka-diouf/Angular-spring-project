@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Medicament } from '../models/medicament';
 import { MedicamentService } from '../services/medicament.service';
+import { StockMedoc } from '../models/stock-medoc.model';
 
 @Component({
   selector: 'app-details-medicaments',
@@ -23,13 +24,14 @@ export class MedicamentDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      const nom = params['nomUrl'];
+      const nom = params['nomMedoc'];
       this.loadMedicament(nom);
+      
     });
   }
 
   loadMedicament(nom: string): void {
-    this.medicamentService.getMedicamentByNom(nom).subscribe(
+    this.medicamentService.getMedicamentByName(nom).subscribe(
       medicament => {
         this.medicament = medicament;
         this.loading = false;
@@ -49,18 +51,18 @@ export class MedicamentDetailComponent implements OnInit {
   onCommander(): void {
     if (this.medicament) {
       // Logique de commande - vous pouvez naviguer vers une page de commande
-      console.log('Commander:', this.medicament.nom);
+      console.log('Commander:', this.medicament.nomMedoc);
       // this.router.navigate(['/commande', this.medicament.nomUrl]);
     }
   }
 
-  onLocaliser(): void {
-    if (this.medicament) {
-      // Logique pour localiser la pharmacie
-      console.log('Localiser pharmacie:', this.medicament.pharmacie);
-      // Vous pouvez ouvrir Google Maps ou naviguer vers une page de localisation
-    }
-  }
+  // onLocaliser(): void {
+  //   if (this.medicament) {
+  //     // Logique pour localiser la pharmacie
+  //     console.log('Localiser pharmacie:', this.medicament.);
+  //     // Vous pouvez ouvrir Google Maps ou naviguer vers une page de localisation
+  //   }
+  // }
 
   deconnexion(): void {
     // Logique de déconnexion
@@ -88,7 +90,7 @@ export class MedicamentDetailComponent implements OnInit {
   modifierMedicament(): void {
     if (this.medicament) {
       // Navigation vers la page d'édition
-      this.router.navigate(['/medicament/edit', this.medicament.nomUrl]);
+      this.router.navigate(['/medicament/edit', this.medicament.nomMedoc]);
 
     }
   }
@@ -100,10 +102,10 @@ export class MedicamentDetailComponent implements OnInit {
   supprimerMedicament(): void {
     if (this.medicament) {
       // Confirmation avant suppression
-      const confirmation = confirm(`Êtes-vous sûr de vouloir supprimer ${this.medicament.nom} ?`);
+      const confirmation = confirm(`Êtes-vous sûr de vouloir supprimer ${this.medicament.nomMedoc} ?`);
       
       if (confirmation) {
-        console.log('Suppression du médicament:', this.medicament.nom);
+        console.log('Suppression du médicament:', this.medicament.nomMedoc);
         
         setTimeout(() => {
           alert('Médicament supprimé avec succès !');

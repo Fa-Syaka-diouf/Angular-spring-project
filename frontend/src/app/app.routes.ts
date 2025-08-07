@@ -10,8 +10,8 @@ export const routes: Routes = [
   { path: 'medicaments', loadComponent: () => import('./medicaments/medicaments.component').then(m => m.MedicamentsComponent) },
   { path: 'formulaire1', loadComponent: () => import('./formulaire1/formulaire1.component').then(m => m.Formulaire1Component) },
   { path: 'formulaire2', loadComponent: () => import('./formulaire2/formulaire2.component').then(m => m.Formulaire2Component) },
-  { path: 'details-medicament/:nomUrl', component: MedicamentDetailComponent },
-  { path: 'details-pharmacie/:nomUrl', component: pharmacieDetailComponent },
+  { path: 'details-medicament/:nomMedicament', component: MedicamentDetailComponent },
+  { path: 'details-pharmacie/:idPharmacie', component: pharmacieDetailComponent },
   { path: '**', redirectTo: '/medicaments' },
   { path: '**', redirectTo: '/pharmacies' }
 ];

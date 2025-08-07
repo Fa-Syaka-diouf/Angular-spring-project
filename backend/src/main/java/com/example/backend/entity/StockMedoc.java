@@ -36,5 +36,5 @@ public class StockMedoc {
 
     @ManyToOne
     @JoinColumn(name = "nom_medoc", insertable = false, updatable = false)
-    private Medicament medicament;
+    private Medicament medicaments;
 }

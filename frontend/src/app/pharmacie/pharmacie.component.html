@@ -71,123 +71,236 @@
             
             <!-- Formulaire réactif fonctionnel -->
             <form [formGroup]="pharmacieForm" (ngSubmit)="onSubmitPharmacie()">
-                <!-- Nom de la pharmacie -->
-                <div class="form-group" style="margin-bottom: 15px;">
-                    <label class="form-label" for="pharmacieNom" style="display: block; margin-bottom: 5px; font-weight: bold;">
-                        Nom de la pharmacie *
-                    </label>
-                    <input 
-                        type="text" 
-                        class="form-input" 
-                        id="pharmacieNom" 
-                        formControlName="nom"
-                        placeholder="Ex: Pharmacie Centrale"
-                        style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                    <div *ngIf="isFieldInvalid('nom')" style="color: red; font-size: 12px; margin-top: 5px;">
-                        {{ getFieldError('nom') }}
-                    </div>
+        
+        <!-- Nom de la pharmacie -->
+        <div class="form-group">
+          <label class="form-label" for="nomPharmacie">
+            Nom de la pharmacie <span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            class="form-input" 
+            id="nomPharmacie" 
+            formControlName="nomPharmacie"
+            placeholder="Ex: Pharmacie Centrale"
+            [class.error]="isFieldInvalid('nomPharmacie')">
+          <div *ngIf="isFieldInvalid('nomPharmacie')" class="error-message">
+            {{ getFieldError('nomPharmacie') }}
+          </div>
+        </div>
+        
+        <!-- Adresse -->
+        <div class="form-group">
+          <label class="form-label" for="adressePharmacie">
+            Adresse <span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            class="form-input" 
+            id="adressePharmacie" 
+            formControlName="adressePharmacie"
+            placeholder="Ex: 123 Avenue des Champs-Élysées"
+            [class.error]="isFieldInvalid('adressePharmacie')">
+          <div *ngIf="isFieldInvalid('adressePharmacie')" class="error-message">
+            {{ getFieldError('adressePharmacie') }}
+          </div>
+        </div>
+        
+        <!-- Téléphone -->
+        <div class="form-group">
+          <label class="form-label" for="contactTelephonique">
+            Téléphone <span class="required">*</span>
+          </label>
+          <input 
+            type="tel" 
+            class="form-input" 
+            id="contactTelephonique" 
+            formControlName="contactTelephonique"
+            placeholder="Ex: +221 33 123 45 67"
+            [class.error]="isFieldInvalid('contactTelephonique')">
+          <div *ngIf="isFieldInvalid('contactTelephonique')" class="error-message">
+            {{ getFieldError('contactTelephonique') }}
+          </div>
+        </div>
+        
+        <!-- Gérant -->
+        <div class="form-group">
+          <label class="form-label" for="idGerant">
+            Gérant <span class="required">*</span>
+          </label>
+          <select 
+            class="form-select" 
+            id="idGerant" 
+            formControlName="idGerant"
+            [class.error]="isFieldInvalid('idGerant')">
+            <option value="">Sélectionner un gérant</option>
+            <option *ngFor="let gerant of gerants" [value]="gerant.idGerant">
+              {{ gerant.prenomGerant }} {{ gerant.nomGerant }} ({{ gerant.anneeExperience }} ans d'exp.)
+            </option>
+          </select>
+          <div *ngIf="isFieldInvalid('idGerant')" class="error-message">
+            {{ getFieldError('idGerant') }}
+          </div>
+        </div>
+        
+        <!-- Coordonnées GPS -->
+        <!-- <div class="coordinates-row">
+          <div class="form-group">
+            <label class="form-label" for="latitude">
+              Latitude <span class="required">*</span>
+            </label>
+            <input 
+              type="number" 
+              class="form-input" 
+              id="latitude" 
+              formControlName="latitude"
+              step="0.000001"
+              placeholder="Ex: 14.6928"
+              [class.error]="isFieldInvalid('latitude')">
+            <div *ngIf="isFieldInvalid('latitude')" class="error-message">
+              {{ getFieldError('latitude') }}
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="longitude">
+              Longitude <span class="required">*</span>
+            </label>
+            <input 
+              type="number" 
+              class="form-input" 
+              id="longitude" 
+              formControlName="longitude"
+              step="0.000001"
+              placeholder="Ex: -17.4467"
+              [class.error]="isFieldInvalid('longitude')">
+            <div *ngIf="isFieldInvalid('longitude')" class="error-message">
+              {{ getFieldError('longitude') }}
+            </div>
+          </div>
+        </div> -->
+        
+        <!-- Section Disponibilités -->
+        <div class="disponibilites-section">
+          <div class="section-title">
+            Disponibilités <span class="required">*</span>
+          </div>
+          
+          <div formArrayName="disponibilites">
+            <div *ngFor="let disponibilite of disponibilitesFormArray.controls; let i = index" 
+                 class="disponibilite-item" 
+                 [formGroupName]="i">
+              
+              <div class="disponibilite-header">
+                <h4>Disponibilité {{ i + 1 }}</h4>
+                <button 
+                  type="button" 
+                  class="btn btn-danger btn-sm"
+                  (click)="removeDisponibilite(i)"
+                  [disabled]="disponibilitesFormArray.length <= 1">
+                  Supprimer
+                </button>
+              </div>
+              
+              <div class="disponibilite-row">
+                <div class="form-group">
+                  <label class="form-label">Jour <span class="required">*</span></label>
+                  <select 
+                    class="form-select" 
+                    formControlName="jour"
+                    [class.error]="isDisponibiliteFieldInvalid(i, 'jour')">
+                    <option value="">Sélectionner un jour</option>
+                    <option 
+                      *ngFor="let jour of getJoursDisponibles(i)" 
+                      [value]="jour.value">
+                      {{ jour.label }}
+                    </option>
+                    <!-- Garder l'option sélectionnée même si elle est "utilisée" -->
+                    <!-- <option 
+                      *ngIf="disponibilite.get('jour')?.value && isJourAlreadySelected(i, disponibilite.get('jour')?.value)"
+                      [value]="disponibilite.get('jour')?.value">
+                      {{ joursDisponibles.find(j => j.value === disponibilite.get('jour')?.value)?.label }}
+                    </option> -->
+                  </select>
+                  <div *ngIf="isDisponibiliteFieldInvalid(i, 'jour')" class="error-message">
+                    {{ getDisponibiliteFieldError(i, 'jour') }}
+                  </div>
                 </div>
                 
-                <!-- Adresse -->
-                <div class="form-group" style="margin-bottom: 15px;">
-                    <label class="form-label" for="pharmacieAdresse" style="display: block; margin-bottom: 5px; font-weight: bold;">
-                        Adresse *
-                    </label>
-                    <input 
-                        type="text" 
-                        class="form-input" 
-                        id="pharmacieAdresse" 
-                        formControlName="adresse"
-                        placeholder="Ex: 123 Avenue des Champs-Élysées"
-                        style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                    <div *ngIf="isFieldInvalid('adresse')" style="color: red; font-size: 12px; margin-top: 5px;">
-                        {{ getFieldError('adresse') }}
-                    </div>
+                <div class="form-group">
+                  <label class="form-label">Heure d'ouverture <span class="required">*</span></label>
+                  <input 
+                    type="time" 
+                    class="form-input" 
+                    formControlName="horaireOuverture"
+                    [class.error]="isDisponibiliteFieldInvalid(i, 'horaireOuverture')">
+                  <div *ngIf="isDisponibiliteFieldInvalid(i, 'horaireOuverture')" class="error-message">
+                    {{ getDisponibiliteFieldError(i, 'horaireOuverture') }}
+                  </div>
                 </div>
                 
-                <!-- Quartier/Zone -->
-                <div class="form-group" style="margin-bottom: 15px;">
-                    <label class="form-label" for="pharmacieQuartier" style="display: block; margin-bottom: 5px; font-weight: bold;">
-                        Quartier/Zone *
-                    </label>
-                    <select 
-                        class="form-input" 
-                        id="pharmacieQuartier" 
-                        formControlName="quartier"
-                        style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        <option value="">Sélectionner un quartier</option>
-                        <option value="yoff">Yoff</option>
-                        <option value="almadies">Almadies</option>
-                        <option value="medina">Médina</option>
-                        <option value="point-e">Point E</option>
-                        <option value="plateau">Plateau</option>
-                        <option value="sacre-coeur">Sacré-Cœur</option>
-                        <option value="ouakam">Ouakam</option>
-                    </select>
-                    <div *ngIf="isFieldInvalid('quartier')" style="color: red; font-size: 12px; margin-top: 5px;">
-                        {{ getFieldError('quartier') }}
-                    </div>
+                <div class="form-group">
+                  <label class="form-label">Heure de fermeture <span class="required">*</span></label>
+                  <input 
+                    type="time" 
+                    class="form-input" 
+                    formControlName="horaireFermeture"
+                    [class.error]="isDisponibiliteFieldInvalid(i, 'horaireFermeture')">
+                  <div *ngIf="isDisponibiliteFieldInvalid(i, 'horaireFermeture')" class="error-message">
+                    {{ getDisponibiliteFieldError(i, 'horaireFermeture') }}
+                  </div>
                 </div>
-                
-                <!-- Téléphone -->
-                <div class="form-group" style="margin-bottom: 15px;">
-                    <label class="form-label" for="pharmacieTelephone" style="display: block; margin-bottom: 5px; font-weight: bold;">
-                        Téléphone *
-                    </label>
-                    <input 
-                        type="tel" 
-                        class="form-input" 
-                        id="pharmacieTelephone" 
-                        formControlName="telephone"
-                        placeholder="Ex: +221 33 123 45 67"
-                        style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                    <div *ngIf="isFieldInvalid('telephone')" style="color: red; font-size: 12px; margin-top: 5px;">
-                        {{ getFieldError('telephone') }}
-                    </div>
-                </div>
-                
-                <!-- Horaires -->
-                <div class="form-group" style="margin-bottom: 15px;">
-                    <label class="form-label" for="pharmacieHoraires" style="display: block; margin-bottom: 5px; font-weight: bold;">
-                        Horaires d'ouverture *
-                    </label>
-                    <input 
-                        type="text" 
-                        class="form-input" 
-                        id="pharmacieHoraires" 
-                        formControlName="horaires"
-                        placeholder="Ex: 08h00 - 20h00"
-                        style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                    <div *ngIf="isFieldInvalid('horaires')" style="color: red; font-size: 12px; margin-top: 5px;">
-                        {{ getFieldError('horaires') }}
-                    </div>
-                </div>
-                
-                <!-- Boutons d'action -->
-                <div class="form-actions" style="text-align: right; margin-top: 20px;">
-                    <button type="button" 
-                            class="btn-cancel" 
-                            (click)="closeAddPharmacyModal()" 
-                            style="margin-right: 10px; padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                        Annuler
-                    </button>
-                    <button type="submit" 
-                            class="btn-submit" 
-                            [disabled]="pharmacieForm.invalid"
-                            style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                        Ajouter la pharmacie
-                    </button>
-                </div>
-                
-                <!-- Debug du formulaire -->
-                <div style="background: #f8f9fa; padding: 10px; margin-top: 20px; border-radius: 4px; font-size: 12px;">
-                    <strong>Debug Formulaire:</strong><br>
-                    Formulaire valide: {{ pharmacieForm.valid }}<br>
-                    Formulaire invalide: {{ pharmacieForm.invalid }}<br>
-                    Formulaire touché: {{ pharmacieForm.touched }}<br>
-                    Erreurs: {{ pharmacieForm.errors | json }}
-                </div>
-            </form>
+              </div>
+              
+              <!-- Afficher l'erreur de plage horaire au niveau du groupe -->
+              <div *ngIf="disponibilitesFormArray.at(i).errors?.['invalidTimeRange'] && disponibilitesFormArray.at(i).touched" 
+                   class="error-message group-error">
+                L'heure de fermeture doit être après l'heure d'ouverture
+              </div>
+            </div>
+          </div>
+          
+          <button 
+            type="button" 
+            class="btn btn-primary btn-add-disponibilite" 
+            (click)="addDisponibilite()">
+            + Ajouter une disponibilité
+          </button>
+          
+          <!-- Erreur globale des disponibilités -->
+          <div *ngIf="pharmacieForm.get('disponibilites')?.errors?.['atLeastOneRequired'] && pharmacieForm.get('disponibilites')?.touched" 
+               class="error-message">
+            {{ getFieldError('disponibilites') }}
+          </div>
+        </div>
+        
+        <!-- Boutons d'action -->
+        <div class="form-actions">
+          <button 
+            type="button" 
+            class="btn btn-cancel" 
+            (click)="closeAddPharmacyModal()">
+            Annuler
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-submit" 
+            [disabled]="pharmacieForm.invalid">
+            Ajouter la pharmacie
+          </button>
+        </div>
+        
+        <!-- Debug du formulaire (à supprimer en production) -->
+        <div class="debug-section" *ngIf="true">
+          <strong>Debug Formulaire:</strong><br>
+          Formulaire valide: {{ pharmacieForm.valid }}<br>
+          Formulaire invalide: {{ pharmacieForm.invalid }}<br>
+          Formulaire touché: {{ pharmacieForm.touched }}<br>
+          Nombre de disponibilités: {{ disponibilitesFormArray.length }}<br>
+          Erreurs principales: {{ pharmacieForm.errors | json }}<br>
+          Erreurs disponibilités: {{ pharmacieForm.get('disponibilites')?.errors | json }}
+        </div>
+      </form>
         </div>
     </div>
 
@@ -198,16 +311,15 @@
             <div class="pharmacy-card" 
                  *ngFor="let pharmacie of pharmacies"
                  (click)="onPharmacieClick(pharmacie)" 
-                 [attr.data-pharmacy]="pharmacie.nomUrl">
+                 [attr.data-pharmacy]="pharmacie.nomPharmacie">
                 <div class="pharmacy-image">
                     <div class="pharmacy-icon">
                         <img src=".\assets\Architecture_PSD__High_Quality_Free_PSD_Templates_for_Download___Freepik-removebg-preview.png" alt="pharmacie">
                     </div>
                 </div>
                 <div class="pharmacy-info">
-                    <div class="pharmacy-name">{{ pharmacie.nom }}</div>
-                    <div class="pharmacy-desc">{{ pharmacie.quartier | titlecase }} - {{ pharmacie.horaires }}</div>
-                    <div class="pharmacy-address">{{ pharmacie.adresse }}</div>
+                    <div class="pharmacy-name">{{ pharmacie.nomPharmacie }}</div>
+                    <div class="pharmacy-address">{{ pharmacie.adressePharmacie }}</div>
                 </div>
             </div>
         </div>

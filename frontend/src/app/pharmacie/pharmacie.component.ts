@@ -1,11 +1,14 @@
-
-// pharmacies.component.ts
+import { Gerant } from './../models/gerant.model';
+import { Disponibilite } from './../models/disponibilite.model';
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormBuilder, FormGroup, FormArray, Validators, AbstractControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { PharmacieService } from '../services/pharmacie.service';
+import { GerantService } from '../services/gerant';
+import { DisponibiliteService } from '../services/disponibilite';
+import { Pharmacie } from '../models/pharmacie.model';
 import { CommonModule } from '@angular/common';
-import { Pharmacie } from '../models/pharmacie';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-pharmacies',
@@ -14,51 +17,183 @@ import { Pharmacie } from '../models/pharmacie';
   templateUrl: './pharmacie.component.html',
   styleUrls: ['./pharmacie.component.css']
 })
+
 export class PharmaciesComponent implements OnInit, OnDestroy {
 
-  
-  // Modal et formulaire
+  // Propriétés
   pharmacies: Pharmacie[] = [];
+  gerants: Gerant[] = [];
+  disponibilites: Disponibilite[] = [];
   isModalOpen = false;
   pharmacieForm: FormGroup;
-  private keyboardListener?: (event: KeyboardEvent) => void;
+  loading = false;
+  error: string | null = null;
+  searchTerm = '';
   searchQuery: string = '';
+  private keyboardListener?: (event: KeyboardEvent) => void;
+
+  // Jours de la semaine pour le dropdown
+  joursDisponibles = [
+    { value: 'LUNDI', label: 'Lundi' },
+    { value: 'MARDI', label: 'Mardi' },
+    { value: 'MERCREDI', label: 'Mercredi' },
+    { value: 'JEUDI', label: 'Jeudi' },
+    { value: 'VENDREDI', label: 'Vendredi' },
+    { value: 'SAMEDI', label: 'Samedi' },
+    { value: 'DIMANCHE', label: 'Dimanche' }
+  ];
 
   constructor(
     private router: Router,
     private formBuilder: FormBuilder,
-    private pharmacieService: PharmacieService
+    private pharmacieService: PharmacieService,
+    private gerantService: GerantService,
+    private disponibiliteService: DisponibiliteService
   ) {
     this.pharmacieForm = this.createPharmacieForm();
   }
-
   ngOnInit(): void {
-    this.loadPharmacie();
+    this.loadPharmacies();
+    this.loadGerants();
+    this.loadDisponibilites();
     this.setupKeyboardListener();
   }
+
   ngOnDestroy(): void {
     this.removeKeyboardListener();
   }
+
+  /**
+   * Charger toutes les pharmacies
+   */
+  loadPharmacies(): void {
+    this.loading = true;
+    this.error = null;
+    
+    this.pharmacieService.getAllPharmacies().subscribe({
+      next: (data) => {
+        this.pharmacies = data;
+        this.loading = false;
+      },
+      error: (error) => {
+        this.error = error;
+        this.loading = false;
+        console.error('Erreur lors du chargement des pharmacies:', error);
+      }
+    });
+  }
+
+  /**
+   * Charger tous les gérants
+   */
+  loadGerants(): void {
+    this.gerantService.getAllGerants().subscribe({
+      next: (gerants) => {
+        this.gerants = gerants;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des gérants:', error);
+      }
+    });
+  }
+  loadDisponibilites(): void {
+    this.disponibiliteService.getAllDisponibilites().subscribe({
+      next: (disponibilites) => {
+        this.disponibilites = disponibilites;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des disponibilités:', error);
+      }
+    });}
 
   /**
    * Créer le formulaire réactif pour ajouter une pharmacie
    */
   private createPharmacieForm(): FormGroup {
     return this.formBuilder.group({
-      nom: ['', [Validators.required, Validators.minLength(3)]],
-      adresse: ['', [Validators.required, Validators.minLength(5)]],
-      quartier: ['', [Validators.required]],
-      telephone: ['', [Validators.required, Validators.pattern(/^\+221\s?\d{2}\s?\d{3}\s?\d{2}\s?\d{2}$/)]],
-      horaires: ['', [Validators.required]]
+      nomPharmacie: ['', [Validators.required, Validators.minLength(3)]],
+      adressePharmacie: ['', [Validators.required, Validators.minLength(5)]],
+      contactTelephonique: ['', [Validators.required, Validators.pattern(/^\+221\s?\d{2}\s?\d{3}\s?\d{2}\s?\d{2}$/)]],
+      idGerant: [null],
+      latitude: [null],
+      longitude: [null],
+      disponibilites: this.formBuilder.array([], [Validators.required, this.atLeastOneDisponibiliteValidator])
     });
   }
 
   /**
+   * Getter pour récupérer le FormArray des disponibilités
+   */
+  get disponibilitesFormArray(): FormArray {
+    return this.pharmacieForm.get('disponibilites') as FormArray;
+  }
+
+  /**
+   * Créer un FormGroup pour une disponibilité
+   */
+  private createDisponibiliteFormGroup(): FormGroup {
+    return this.formBuilder.group({
+      jour: ['', [Validators.required]],
+      horaireOuverture: ['', [Validators.required]],
+      horaireFermeture: ['', [Validators.required]]
+    }, { validators: this.heuresValidator });
+  }
+
+  /**
+   * Ajouter une nouvelle disponibilité
+   */
+  addDisponibilite(): void {
+    this.disponibilitesFormArray.push(this.createDisponibiliteFormGroup());
+  }
+
+  /**
+   * Supprimer une disponibilité par index
+   */
+  removeDisponibilite(index: number): void {
+    if (this.disponibilitesFormArray.length > 1) {
+      this.disponibilitesFormArray.removeAt(index);
+    }
+  }
+
+  /**
+   * Validators personnalisés
+  //  */
+  // private latitudeValidator(control: AbstractControl): {[key: string]: any} | null {
+  //   const value = parseFloat(control.value);
+  //   if (isNaN(value) || value < -90 || value > 90) {
+  //     return { 'invalidLatitude': { value: control.value } };
+  //   }
+  //   return null;
+  // }
+
+  // private longitudeValidator(control: AbstractControl): {[key: string]: any} | null {
+  //   const value = parseFloat(control.value);
+  //   if (isNaN(value) || value < -180 || value > 180) {
+  //     return { 'invalidLongitude': { value: control.value } };
+  //   }
+  //   return null;
+  // }
+
+  private atLeastOneDisponibiliteValidator(formArray: AbstractControl): {[key: string]: any} | null {
+    const array = formArray as FormArray;
+    return array.length > 0 ? null : { 'atLeastOneRequired': true };
+  }
+
+  private heuresValidator(group: AbstractControl): {[key: string]: any} | null {
+    const ouverture = group.get('horaireOuverture')?.value;
+    const fermeture = group.get('horaireFermeture')?.value;
+    
+    if (ouverture && fermeture && ouverture >= fermeture) {
+      return { 'invalidTimeRange': true };
+    }
+    return null;
+  }
+
+  /**
    * Gère le clic sur une carte de pharmacie
-   * @param pharmacie - L'objet pharmacie
    */
   onPharmacieClick(pharmacie: Pharmacie): void {
-    this.router.navigate(['/details-pharmacie', pharmacie.nomUrl]);
+    this.router.navigate(['/details-pharmacie', pharmacie.idPharmacie]);
   }
 
   /**
@@ -68,6 +203,14 @@ export class PharmaciesComponent implements OnInit, OnDestroy {
     this.isModalOpen = true;
     document.body.style.overflow = 'hidden';
     this.pharmacieForm.reset();
+    
+    // Réinitialiser le FormArray des disponibilités
+    while (this.disponibilitesFormArray.length !== 0) {
+      this.disponibilitesFormArray.removeAt(0);
+    }
+    
+    // Ajouter une disponibilité par défaut
+    this.addDisponibilite();
   }
 
   /**
@@ -91,75 +234,95 @@ export class PharmaciesComponent implements OnInit, OnDestroy {
   /**
    * Soumettre le formulaire d'ajout de pharmacie
    */
-  onSubmitPharmacie(): void {
-    if (this.pharmacieForm.valid) {
-      const nouvellePharmacieData = this.pharmacieForm.value;
-      
-      // Créer l'objet pharmacie complet
-      const nouvellePharmarie: Pharmacie = {
-        id: (this.pharmacies.length + 1).toString(),
-        nom: nouvellePharmacieData.nom,
-        nomUrl: this.generateNomUrl(nouvellePharmacieData.nom),
-        adresse: nouvellePharmacieData.adresse,
-        quartier: nouvellePharmacieData.quartier,
-        telephone: nouvellePharmacieData.telephone,
-        horaires: nouvellePharmacieData.horaires
-      };
+onSubmitPharmacie(): void {
+  if (this.pharmacieForm.valid) {
+    const formValue = this.pharmacieForm.value;
 
-      console.log('Nouvelle pharmacie à ajouter:', nouvellePharmarie);
+const disponibilitesForm = formValue.disponibilites.map((d: any) => ({
+  jour: d.jour,
+  horaireOuverture: d.horaireOuverture,
+  horaireFermeture: d.horaireFermeture
+}));
 
-      
-      this.pharmacieService.addPharmacie(nouvellePharmarie).subscribe({
-        next: (response) => {
-        this.loadPharmacie();                 
-        this.closeAddPharmacyModal();         
-        this.showSuccessMessage();              
+this.gerantService.getGerantById(parseInt(formValue.idGerant)).subscribe((gerant: Gerant) => {
+  if (!gerant) {
+    this.showErrorMessage('Gérant non trouvé');
+    return;
+  }
+  console.log('Gérant trouvé:', gerant);
+  const nouvellePharmacieSansId: Pharmacie = {
+    nomPharmacie: formValue.nomPharmacie,
+    contactTelephonique: formValue.contactTelephonique,
+    idGerant: parseInt(formValue.idGerant),
+    gerant: gerant,
+    latitude: 10, // Valeur par défaut, peut être modifiée
+    longitude: 10, // Valeur par défaut, peut être modifiée
+    adressePharmacie: formValue.adressePharmacie,
+    disponibilites: [] 
+  };
+  console.log('Nouvelle pharmacie sans ID:', nouvellePharmacieSansId);
+    this.pharmacieService.createPharmacie(nouvellePharmacieSansId).subscribe({
+      next: (pharmacieCreee) => {
+        console.log("pharmacie cree",pharmacieCreee);
+        const idPharmacie = pharmacieCreee.idPharmacie;
+        const disponibilitesAvecId = disponibilitesForm.map((d: any) => ({
+          ...d,
+          idPharmacie: idPharmacie
+        }));
+        const disponibiliteObservables = disponibilitesAvecId.map((d: any) =>
+          this.disponibiliteService.createDisponibilite(d as Disponibilite)
+        );
+
+        forkJoin<Disponibilite[]>(disponibiliteObservables).subscribe({
+          next: (disponibilitesCreees: Disponibilite[]) => {
+            pharmacieCreee.disponibilites = disponibilitesCreees;
+            this.pharmacies.push(pharmacieCreee);
+            this.showSuccessMessage('Pharmacie ajoutée avec succès');
+            this.closeAddPharmacyModal();
+          },
+          error: (err) => {
+            console.error('Erreur lors de la création des disponibilités:', err);
+            this.showErrorMessage('Erreur lors de la création des disponibilités');
+          }
+        });
       },
-        error: (error) => {
-          console.error('Erreur lors de l\'ajout de la pharmacie:', error);
-        }
-      });
+      error: (err) => {
+        console.error('Erreur lors de la création de la pharmacie:', err);
+        this.showErrorMessage('Erreur lors de la création de la pharmacie');
+      }
+    });
+});
 
-     
-      // Simulation de notification de succès
-      alert('Pharmacie ajoutée avec succès !');
-    } else {
-      console.log('Formulaire invalide', this.pharmacieForm.errors);
-      Object.keys(this.pharmacieForm.controls).forEach(key => {
-        this.pharmacieForm.get(key)?.markAsTouched();
-      });
-    }
+
+  } else {
+    console.log('Formulaire invalide', this.pharmacieForm.errors);
+    this.markFormGroupTouched();
   }
+}
 
-  
-   private generateNomUrl(nom: string): string {
-    return nom.toLowerCase()
-             .replace(/[àáâãäå]/g, 'a')
-             .replace(/[èéêë]/g, 'e')
-             .replace(/[ìíîï]/g, 'i')
-             .replace(/[òóôõö]/g, 'o')
-             .replace(/[ùúûü]/g, 'u')
-             .replace(/[ç]/g, 'c')
-             .replace(/[^a-z0-9]/g, '-')
-             .replace(/-+/g, '-')
-             .replace(/^-|-$/g, '');
-  }
-
-  // Marquer tous les champs comme touchés pour afficher les erreurs
+  /**
+   * Marquer tous les champs comme touchés pour afficher les erreurs
+   */
   private markFormGroupTouched(): void {
     Object.keys(this.pharmacieForm.controls).forEach(key => {
-      this.pharmacieForm.get(key)?.markAsTouched();
+      const control = this.pharmacieForm.get(key);
+      control?.markAsTouched();
+      
+      if (control instanceof FormArray) {
+        control.controls.forEach(item => {
+          if (item instanceof FormGroup) {
+            Object.keys(item.controls).forEach(subKey => {
+              item.get(subKey)?.markAsTouched();
+            });
+          }
+        });
+      }
     });
   }
 
-  // Afficher un message de succès
-  private showSuccessMessage(): void {
-    // Remplacez par votre système de notification
-    alert('Médicament ajouté avec succès !');
-    // Ou utilisez un service de notification comme ngx-toastr
-  }
-
-
+  /**
+   * Configuration de l'écoute clavier
+   */
   private setupKeyboardListener(): void {
     this.keyboardListener = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && this.isModalOpen) {
@@ -169,57 +332,161 @@ export class PharmaciesComponent implements OnInit, OnDestroy {
     document.addEventListener('keydown', this.keyboardListener);
   }
 
-  // Suppression de l'écoute clavier
+  /**
+   * Suppression de l'écoute clavier
+   */
   private removeKeyboardListener(): void {
     if (this.keyboardListener) {
       document.removeEventListener('keydown', this.keyboardListener);
     }
   }
 
+  /**
+   * Vérifier si un champ est invalide
+   */
   isFieldInvalid(fieldName: string): boolean {
     const field = this.pharmacieForm.get(fieldName);
     return !!(field && field.invalid && field.touched);
   }
 
+  /**
+   * Vérifier si un champ de disponibilité est invalide
+   */
+  isDisponibiliteFieldInvalid(index: number, fieldName: string): boolean {
+    const field = this.disponibilitesFormArray.at(index).get(fieldName);
+    return !!(field && field.invalid && field.touched);
+  }
+
+  /**
+   * Obtenir l'erreur d'un champ
+   */
   getFieldError(fieldName: string): string {
     const field = this.pharmacieForm.get(fieldName);
     if (field && field.errors && field.touched) {
-      if (field.errors['required']) return `${fieldName} est requis`;
-      if (field.errors['minlength']) return `${fieldName} trop court`;
-      if (field.errors['min']) return `${fieldName} doit être positif`;
+      if (field.errors['required']) return `${this.getFieldLabel(fieldName)} est requis`;
+      if (field.errors['minlength']) return `${this.getFieldLabel(fieldName)} trop court`;
+      if (field.errors['pattern']) return this.getPatternError(fieldName);
+      if (field.errors['invalidLatitude']) return 'Latitude doit être entre -90 et 90';
+      if (field.errors['invalidLongitude']) return 'Longitude doit être entre -180 et 180';
+      if (field.errors['atLeastOneRequired']) return 'Au moins une disponibilité est requise';
     }
     return '';
   }
 
-  loadPharmacie(): void {
-    this.pharmacieService.getpharmacies().subscribe(
-      pharmacies => this.pharmacies = pharmacies
+  /**
+   * Obtenir l'erreur d'un champ de disponibilité
+   */
+  getDisponibiliteFieldError(index: number, fieldName: string): string {
+    const disponibiliteGroup = this.disponibilitesFormArray.at(index);
+    const field = disponibiliteGroup.get(fieldName);
+    
+    if (field && field.errors && field.touched) {
+      if (field.errors['required']) return `${this.getFieldLabel(fieldName)} est requis`;
+    }
+    
+    // Vérifier les erreurs au niveau du groupe
+    if (disponibiliteGroup.errors && disponibiliteGroup.errors['invalidTimeRange']) {
+      return 'L\'heure de fermeture doit être après l\'heure d\'ouverture';
+    }
+    
+    return '';
+  }
+
+  /**
+   * Obtenir le libellé d'un champ
+   */
+  private getFieldLabel(fieldName: string): string {
+    const labels: {[key: string]: string} = {
+      'nomPharmacie': 'Nom de la pharmacie',
+      'adressePharmacie': 'Adresse',
+      'contactTelephonique': 'Téléphone',
+      'idGerant': 'Gérant',
+      'latitude': 'Latitude',
+      'longitude': 'Longitude',
+      'jour': 'Jour',
+      'horaireOuverture': 'Heure d\'ouverture',
+      'horaireFermeture': 'Heure de fermeture'
+    };
+    return labels[fieldName] || fieldName;
+  }
+
+  /**
+   * Obtenir l'erreur de pattern spécifique
+   */
+  private getPatternError(fieldName: string): string {
+    if (fieldName === 'contactTelephonique') {
+      return 'Format de téléphone invalide (+221 XX XXX XX XX)';
+    }
+    return 'Format invalide';
+  }
+
+  /**
+   * Afficher un message de succès
+   */
+  private showSuccessMessage(message: string): void {
+    // Remplacez par votre système de notification
+    alert(message);
+    // Ou utilisez un service de notification comme ngx-toastr
+    // this.toastr.success(message);
+  }
+
+  /**
+   * Afficher un message d'erreur
+   */
+  private showErrorMessage(message: string): void {
+    // Remplacez par votre système de notification
+    alert(message);
+    // Ou utilisez un service de notification comme ngx-toastr
+    // this.toastr.error(message);
+  }
+
+  /**
+   * Recherche de pharmacies
+   */
+  onSearch(): void {
+    if (this.searchQuery.trim()) {
+      this.pharmacieService.searchPharmaciesByName(this.searchQuery).subscribe({
+        next: (pharmacies) => this.pharmacies = pharmacies,
+        error: (error) => console.error('Erreur lors de la recherche:', error)
+      });
+    } else {
+      this.loadPharmacies();
+    }
+  }
+
+  /**
+   * Filtrer par critère
+   */
+  onFilterClick(filter: string): void {
+    this.searchQuery = filter;
+    this.onSearch();
+  }
+
+  /**
+   * Obtenir le nom complet d'un gérant
+   */
+  getGerantNomComplet(idGerant: number): string {
+    const gerant = this.gerants.find(g => g.idGerant === idGerant);
+    return gerant ? `${gerant.prenomGerant} ${gerant.nomGerant}` : 'Gérant inconnu';
+  }
+
+  /**
+   * Vérifier si un jour est déjà sélectionné
+   */
+  isJourAlreadySelected(currentIndex: number, jour: string): boolean {
+    return this.disponibilitesFormArray.controls.some((control, index) => 
+      index !== currentIndex && control.get('jour')?.value === jour
     );
   }
 
-
-
-  onSearch(): void {
-      if (this.searchQuery.trim()) {
-        this.pharmacieService.searchpharmacies(this.searchQuery).subscribe(
-          pharmacies => this.pharmacies = pharmacies
-        );
-      } else {
-        this.loadPharmacie();
-      }
-    }
-  
-    onFilterClick(filter: string): void {
-      this.searchQuery = filter;
-      this.onSearch();
-    }
-    // Dans votre component, ajoutez cette méthode :
-  
-  
-    trackByMedicament(index: number, pharmacie: Pharmacie): string {
-      return pharmacie.id;
-    }
-
+  /**
+   * Obtenir les jours disponibles pour un index donné
+   */
+  getJoursDisponibles(currentIndex: number): {value: string, label: string}[] {
+    return this.joursDisponibles.filter(jour => 
+      !this.isJourAlreadySelected(currentIndex, jour.value)
+    );
+  }
    navigateToHome(): void{
     this.router.navigate(['/accueil'])
   }
@@ -242,7 +509,9 @@ export class PharmaciesComponent implements OnInit, OnDestroy {
 navigateToFormulaire() {
   this.router.navigate(['/formulaire1']);
 }
-
-
 }
+    
+
+
+
 

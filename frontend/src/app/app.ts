@@ -4,14 +4,22 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, CommonModule, FormsModule],
+  imports: [
+    RouterOutlet, 
+    RouterLinkActive,  // ← Ajouté si vous l'utilisez
+    RouterLink,        // ← Ajouté si vous l'utilisez
+    CommonModule, 
+    FormsModule
+  ],
   standalone: true,
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {
+  // Votre code de composant
   protected readonly title = signal('frontend');
   
 

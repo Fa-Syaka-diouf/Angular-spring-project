@@ -46,14 +46,14 @@
           </button>
           
           <div class="medication-hero-info">
-            <h1 class="medication-title">{{ pharmacie?.nom || 'PHARMACIE OUEST FOIRE' }}</h1>
-            <p class="medication-subtitle">{{ pharmacie?.quartier || 'OUEST FOIRE CITE XANDAR' }}</p>
+            <h1 class="medication-title">{{ pharmacie?.nomPharmacie}}</h1>
+            <p class="medication-subtitle">{{ pharmacie?.adressePharmacie }}</p>
             <div class="medication-pharmacy">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path d="M21 10C21 17 12 23 12 23S3 17 3 10A9 9 0 0 1 12 1A9 9 0 0 1 21 10Z" stroke="white" stroke-width="2"/>
                 <circle cx="12" cy="10" r="3" stroke="white" stroke-width="2"/>
               </svg>
-              {{ pharmacie?.nom || 'Pharmacie ALAMARES' }}
+              {{ pharmacie?.nomPharmacie }}
             </div>
           </div>
         </div>
@@ -71,19 +71,15 @@
           <div class="info-grid">
             <div class="info-item">
               <span class="info-label">Nom commercial</span>
-              <span class="info-value">{{ pharmacie?.nom || 'PHARMACIE OUEST FOIRE' }}</span>
+              <span class="info-value">{{ pharmacie?.nomPharmacie || 'PHARMACIE OUEST FOIRE' }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Quartier</span>
-              <span class="info-value">{{ pharmacie?.quartier || 'OUEST FOIRE CITE XANDAR' }}</span>
+              <span class="info-value">{{ pharmacie?.adressePharmacie || 'OUEST FOIRE CITE XANDAR' }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Numero</span>
-              <span class="info-value">{{ pharmacie?.telephone || '783456789' }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">Horaire</span>
-              <span class="info-value">{{ pharmacie?.horaires || 'heures normales' }}</span>
+              <span class="info-value">{{ pharmacie?.contactTelephonique || '783456789' }}</span>
             </div>
           </div>
         </div>
@@ -91,17 +87,16 @@
         <div class="info-card">
           <h2>Horaires</h2>
           <div class="availability-info">
-            <div class="availability-item">
+            <div class="availability-item" *ngFor="let dispo of pharmacie?.disponibilites">
               <div class="availability-status available">
                 <div class="status-dot"></div>
-                <span>Horaires</span>
+                <span>{{ dispo.jour }}</span>
               </div>
-              <span class="stock-count">{{ pharmacie?.horaires || '24' }}</span>
+              <span class="stock-count">{{ dispo.horaireOuverture }} - {{ dispo.horaireFermeture }}</span>
             </div>
           </div>
         </div>
       </div>
-
       <!-- Sidebar avec actions -->
       <div class="sidebar">
         <div class="action-card">
@@ -135,7 +130,7 @@
         <div class="pharmacy-card">
           <h3>Pharmacie</h3>
           <div class="pharmacy-info">
-            <div class="pharmacy-name">{{ pharmacie?.nom || 'Pharmacie ALAMARES' }}</div>
+            <div class="pharmacy-name">{{ pharmacie?.nomPharmacie || 'Pharmacie ALAMARES' }}</div>
             <div class="pharmacy-address">123 Avenue des Champs-Élysées, Paris</div>
             <div class="pharmacy-hours">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">

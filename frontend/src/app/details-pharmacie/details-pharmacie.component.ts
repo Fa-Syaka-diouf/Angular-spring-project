@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Pharmacie } from '../models/pharmacie';
+import { Pharmacie } from '../models/pharmacie.model';
 import { PharmacieService } from '../services/pharmacie.service';
 
 @Component({
@@ -23,19 +23,18 @@ export class pharmacieDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      const nom = params['nomUrl'];
-      this.loadpharmacie(nom);
+      const idPharmacie = params['idPharmacie'];
+      this.loadpharmacie(idPharmacie);
     });
   }
 
-  loadpharmacie(nom: string): void {
-    this.pharmacieService.getpharmacieByNom(nom).subscribe(
+  loadpharmacie(id: number): void {
+    this.pharmacieService.getPharmacieById(id).subscribe(
       pharmacie => {
         this.pharmacie = pharmacie;
         this.loading = false;
         
         if (!pharmacie) {
-          // Rediriger si médicament non trouvé
           this.router.navigate(['/pharmacie']);
         }
       }
@@ -49,7 +48,7 @@ export class pharmacieDetailComponent implements OnInit {
   onCommander(): void {
     if (this.pharmacie) {
       // Logique de commande - vous pouvez naviguer vers une page de commande
-      console.log('Commander:', this.pharmacie.nom);
+      console.log('Commander:', this.pharmacie.nomPharmacie);
       // this.router.navigate(['/commande', this.pharmacie.nomUrl]);
     }
   }
@@ -57,7 +56,7 @@ export class pharmacieDetailComponent implements OnInit {
   onLocaliser(): void {
     if (this.pharmacie) {
       // Logique pour localiser la pharmacie
-      console.log('Localiser pharmacie:', this.pharmacie.quartier);
+      console.log('Localiser pharmacie:', this.pharmacie.adressePharmacie);
       // Vous pouvez ouvrir Google Maps ou naviguer vers une page de localisation
     }
   }
@@ -88,25 +87,29 @@ export class pharmacieDetailComponent implements OnInit {
   modifierpharmacie(): void {
     if (this.pharmacie) {
       // Navigation vers la page d'édition
-      this.router.navigate(['/pharmacie/edit', this.pharmacie.nomUrl]);
+      this.router.navigate(['/pharmacie/edit', this.pharmacie.nomPharmacie]);
 
     }
   }
 
-  /**
-   * Supprimer le médicament
-   */
   supprimerpharmacie(): void {
     if (this.pharmacie) {
-      // Confirmation avant suppression
-      const confirmation = confirm(`Êtes-vous sûr de vouloir supprimer ${this.pharmacie.nom} ?`);
+      const confirmation = confirm(`Êtes-vous sûr de vouloir supprimer ${this.pharmacie.nomPharmacie} ?`);
       
       if (confirmation) {
-        console.log('Suppression du médicament:', this.pharmacie.nom);
-        
+      
+        this.pharmacieService.deletePharmacie(this.pharmacie.idPharmacie!).subscribe({
+           next: (pharmacie) => {
+              console.log('Suppression de la pharmacie');
+            },
+            error: (error) => {
+              console.error('Erreur lors de la création de la pharmacie:', error);
+            }
+          });
+
+
         setTimeout(() => {
-          alert('Médicament supprimé avec succès !');
-          this.router.navigate(['/medications']);
+          alert('pharmacie supprimé avec succès !');
         }, 1000);
       }
 }

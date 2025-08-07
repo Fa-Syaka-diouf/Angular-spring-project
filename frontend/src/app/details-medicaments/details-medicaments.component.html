@@ -46,14 +46,14 @@
           </button>
           
           <div class="medication-hero-info">
-            <h1 class="medication-title">{{ medicament?.nom || 'DOLIPRANE' }}</h1>
-            <p class="medication-subtitle">{{ medicament?.categorie || 'Paracétamol 1000mg' }}</p>
+            <h1 class="medication-title">{{ medicament?.nomMedoc}}</h1>
+            <p class="medication-subtitle">{{ medicament?.categorie }}</p>
             <div class="medication-pharmacy">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path d="M21 10C21 17 12 23 12 23S3 17 3 10A9 9 0 0 1 12 1A9 9 0 0 1 21 10Z" stroke="white" stroke-width="2"/>
                 <circle cx="12" cy="10" r="3" stroke="white" stroke-width="2"/>
               </svg>
-              {{ medicament?.pharmacie || 'Pharmacie ALAMARES' }}
+              {{ medicament?.nomMedoc || 'Pharmacie ALAMARES' }}
             </div>
           </div>
         </div>
@@ -71,19 +71,11 @@
           <div class="info-grid">
             <div class="info-item">
               <span class="info-label">Nom commercial</span>
-              <span class="info-value">{{ medicament?.nom || 'DOLIPRANE' }}</span>
+              <span class="info-value">{{ medicament?.nomMedoc || 'DOLIPRANE' }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">categorie</span>
               <span class="info-value">{{ medicament?.categorie || 'Paracétamol' }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">Dosage</span>
-              <span class="info-value">{{ medicament?.dose || '1000 mg' }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">Pharmacie</span>
-              <span class="info-value">{{ medicament?.pharmacie || 'Comprimé pelliculé' }}</span>
             </div>
           </div>
         </div>
@@ -96,10 +88,10 @@
                 <div class="status-dot"></div>
                 <span>En stock</span>
               </div>
-              <span class="stock-count">{{ medicament?.pharmacie || '24' }} unités disponibles</span>
+              <span class="stock-count">{{'24' }} unités disponibles</span>
             </div>
             <div class="price-info">
-              <span class="price">{{ medicament?.prix || '2,50' }}€</span>
+              <span class="price">{{'2,50' }}€</span>
               <span class="price-label">par boîte</span>
             </div>
           </div>
@@ -157,7 +149,7 @@
         <div class="pharmacy-card">
           <h3>Pharmacie</h3>
           <div class="pharmacy-info">
-            <div class="pharmacy-name">{{ medicament?.pharmacie || 'Pharmacie ALAMARES' }}</div>
+            <div class="pharmacy-name">{{'Pharmacie ALAMARES' }}</div>
             <div class="pharmacy-address">123 Avenue des Champs-Élysées, Paris</div>
             <div class="pharmacy-hours">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">

@@ -7,6 +7,10 @@ import { MedicamentService } from '../services/medicament.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
+import { StockMedoc } from '../models/stock-medoc.model';
+import { StockMedocService } from '../services/stock-medoc.service';
+import { PharmacieService } from '../services/pharmacie.service';
+import { Pharmacie } from '../models/pharmacie.model';
 
 @Component({
   selector: 'app-medicaments',
@@ -17,6 +21,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 })
 export class MedicamentsComponent implements OnInit, OnDestroy{
   medicaments: Medicament[] = [];
+  pharmacies: Pharmacie[] = [];
+  stockmedocs: StockMedoc[] = [];
   isModalOpen = false;
   medicamentForm: FormGroup;
   private keyboardListener?: (event: KeyboardEvent) => void;
@@ -25,21 +31,25 @@ export class MedicamentsComponent implements OnInit, OnDestroy{
  
    constructor(
     private medicamentService: MedicamentService,
+    private stockMedocService: StockMedocService,
+    private pharmacieService: PharmacieService,
     private router: Router,
     private formBuilder: FormBuilder
   ) {
     this.medicamentForm = this.formBuilder.group({
-      nom: ['', [Validators.required, Validators.minLength(2)]],
-      pharmacie: ['', [Validators.required, Validators.minLength(2)]],
+      nomMedoc: ['', [Validators.required, Validators.minLength(2)]],
+      idPharmacie: [null, [Validators.required]],
       prix: ['', [Validators.required, Validators.min(0)]],
-      categorie: ['', [Validators.required, Validators.minLength(2)]],
-      dose: ['', [Validators.required]]
+      quantite: ['', [Validators.required, Validators.min(1)]],
+      categorie: ['', [Validators.required, Validators.minLength(2)]]
     });
   }
 
 
   ngOnInit(): void {
+    this.loadPharmacies();
     this.loadMedicaments();
+    this.loadStockMedocs();
     this.setupKeyboardListener();
   }
 
@@ -68,18 +78,28 @@ export class MedicamentsComponent implements OnInit, OnDestroy{
       const formValue = this.medicamentForm.value;
       
       const newMedicament: Medicament = {
-        id: this.generateNewId(),
-        nom: formValue.nom.trim(),
-        nomUrl: this.generateNomUrl(formValue.nom),
-        pharmacie: formValue.pharmacie.trim(),
-        prix: parseInt(formValue.prix),
-        categorie: formValue.categorie.trim(),
-        dose: formValue.dose.trim()
+        nomMedoc: formValue.nomMedoc,
+        categorie: formValue.categorie
       };
+      console.log("newMedicament:", newMedicament);
 
+      const newStock: StockMedoc = {
+        idPharmacie: formValue.idPharmacie,
+        nomMedoc: formValue.nomMedoc,
+        quantite: formValue.quantite,
+        prix: formValue.prix,
+      };
+      console.log("newStock:", newStock);
       
-      this.medicamentService.addMedicament(newMedicament).subscribe({
+      this.medicamentService.createMedicament(newMedicament).subscribe({
       next: (response) => {
+        console.log('Médicament créé:', response);
+        this.stockMedocService.createStock(newStock).subscribe({
+          next: (stockResponse) => {},
+
+          error: (error) => {console.error('Erreur lors de la création du stock:', error);}
+           }); 
+
         this.loadMedicaments();                 
         this.closeAddMedicationModal();         
         this.showSuccessMessage();              
@@ -96,26 +116,6 @@ export class MedicamentsComponent implements OnInit, OnDestroy{
     }
   }
 
-  // Générer un nouvel ID
-  private generateNewId(): number {
-    return this.medicaments.length > 0 
-      ? Math.max(...this.medicaments.map(m => m.id)) + 1 
-      : 1;
-  }
-
-  // Générer l'URL du nom
-  private generateNomUrl(nom: string): string {
-    return nom.toLowerCase()
-             .replace(/[àáâãäå]/g, 'a')
-             .replace(/[èéêë]/g, 'e')
-             .replace(/[ìíîï]/g, 'i')
-             .replace(/[òóôõö]/g, 'o')
-             .replace(/[ùúûü]/g, 'u')
-             .replace(/[ç]/g, 'c')
-             .replace(/[^a-z0-9]/g, '-')
-             .replace(/-+/g, '-')
-             .replace(/^-|-$/g, '');
-  }
 
   // Marquer tous les champs comme touchés pour afficher les erreurs
   private markFormGroupTouched(): void {
@@ -173,39 +173,34 @@ export class MedicamentsComponent implements OnInit, OnDestroy{
   }
 
 
-
+loadPharmacies(): void {
+    
+    this.pharmacieService.getAllPharmacies().subscribe({
+      next: (data) => {
+        this.pharmacies = data;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des pharmacies:', error);
+      }
+    });
+  }
 
   loadMedicaments(): void {
-    this.medicamentService.getMedicaments().subscribe(
+    this.medicamentService.getAllMedicaments().subscribe(
       medicaments => this.medicaments = medicaments
     );
+  }
+  loadStockMedocs(): void {
+    this.stockMedocService.getAllStocks().subscribe(
+      stockmedocs => this.stockmedocs = stockmedocs)  
+    ;   
   }
 
   onMedicamentClick(medicament: Medicament): void {
     // Navigation vers la page détail
-    this.router.navigate(['/details-medicament', medicament.nomUrl]);
+    this.router.navigate(['/details-medicament', medicament.nomMedoc]);
   }
 
-  onSearch(): void {
-    if (this.searchQuery.trim()) {
-      this.medicamentService.searchMedicaments(this.searchQuery).subscribe(
-        medicaments => this.medicaments = medicaments
-      );
-    } else {
-      this.loadMedicaments();
-    }
-  }
-
-  onFilterClick(filter: string): void {
-    this.searchQuery = filter;
-    this.onSearch();
-  }
-  // Dans votre component, ajoutez cette méthode :
-
-
-  trackByMedicament(index: number, medicament: Medicament): number {
-    return medicament.id;
-  }
 
   
 

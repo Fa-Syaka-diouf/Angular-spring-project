@@ -119,9 +119,6 @@ public class EntityDTOMapper {
         dto.setJour(disponibilite.getJour());
         dto.setHoraireOuverture(disponibilite.getHoraireOuverture());
         dto.setHoraireFermeture(disponibilite.getHoraireFermeture());
-        if (disponibilite.getPharmacie() != null) {
-            dto.setIdPharmacie(disponibilite.getPharmacie().getIdPharmacie());
-        }
         return dto;
     }
 
@@ -145,9 +142,6 @@ public class EntityDTOMapper {
         dto.setPrix(stockMedoc.getPrix());
         if (stockMedoc.getPharmacie() != null) {
             dto.setNomPharmacie(stockMedoc.getPharmacie().getNomPharmacie());
-        }
-        if (stockMedoc.getMedicament() != null) {
-            dto.setCategorieMedicament(stockMedoc.getMedicament().getCategorie());
         }
         return dto;
     }

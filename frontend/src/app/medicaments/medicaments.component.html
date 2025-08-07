@@ -84,11 +84,11 @@
                     type="text" 
                     class="form-input" 
                     id="medicamentNom" 
-                    formControlName="nom"
+                    formControlName="nomMedoc"
                     placeholder="Ex: Doliprane"
                     style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                <div *ngIf="isFieldInvalid('nom')" style="color: red; font-size: 12px; margin-top: 5px;">
-                    {{ getFieldError('nom') }}
+                <div *ngIf="isFieldInvalid('nomMedoc')" style="color: red; font-size: 12px; margin-top: 5px;">
+                    {{ getFieldError('nomMedoc') }}
                 </div>
             </div>
             
@@ -97,15 +97,18 @@
                 <label class="form-label" for="medicamentPharmacie" style="display: block; margin-bottom: 5px; font-weight: bold;">
                     Pharmacie *
                 </label>
-                <input 
-                    type="text" 
-                    class="form-input" 
-                    id="medicamentPharmacie" 
-                    formControlName="pharmacie"
-                    placeholder="Ex: Pharmacie Centrale"
-                    style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                <div *ngIf="isFieldInvalid('pharmacie')" style="color: red; font-size: 12px; margin-top: 5px;">
-                    {{ getFieldError('pharmacie') }}
+                <select 
+                    class="form-select" 
+                    id="idPharmacie" 
+                    formControlName="idPharmacie"
+                    [class.error]="isFieldInvalid('idPharmacie')">
+                    <option value="">Sélectionner un gérant</option>
+                    <option *ngFor="let pharmacie of pharmacies" [value]="pharmacie.idPharmacie">
+                    {{ pharmacie.nomPharmacie }}  {{ "de" + pharmacie.gerant.nomGerant }}
+                    </option>
+                </select>
+                <div *ngIf="isFieldInvalid('idPharmacie')" class="error-message">
+                    {{ getFieldError('idPharmacie') }}
                 </div>
             </div>
             
@@ -147,17 +150,17 @@
             <!-- Dosage -->
             <div class="form-group" style="margin-bottom: 15px;">
                 <label class="form-label" for="medicamentDose" style="display: block; margin-bottom: 5px; font-weight: bold;">
-                    Dosage *
+                    quantite *
                 </label>
                 <input 
                     type="text" 
                     class="form-input" 
                     id="medicamentDose" 
-                    formControlName="dose"
+                    formControlName="quantite"
                     placeholder="Ex: 500mg"
                     style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                <div *ngIf="isFieldInvalid('dose')" style="color: red; font-size: 12px; margin-top: 5px;">
-                    {{ getFieldError('dose') }}
+                <div *ngIf="isFieldInvalid('quantite')" style="color: red; font-size: 12px; margin-top: 5px;">
+                    {{ getFieldError('quantite') }}
                 </div>
             </div>
             
@@ -196,7 +199,7 @@
         <div class="medication-card" 
              *ngFor="let medicament of medicaments"
              (click)="onMedicamentClick(medicament)" 
-             [attr.data-medication]="medicament.nomUrl">
+             [attr.data-medication]="medicament.nomMedoc">
             <div class="medication-image">
                 <div class="pill-bottle">
                     <div class="pills pill-1"></div>
@@ -206,8 +209,8 @@
                 </div>
             </div>
             <div class="medication-info">
-                <div class="medication-name">{{ medicament.nom }}</div>
-                <div class="medication-desc">{{ medicament.categorie }} - {{ medicament.pharmacie }}</div>
+                <div class="medication-name">{{ medicament.nomMedoc }}</div>
+                <div class="medication-desc">{{ medicament.categorie }}</div>
             </div>
         </div>
     </div>
